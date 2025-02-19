@@ -7,10 +7,12 @@ package view;
 
 import controller.CidDAO;
 import controller.ConsultaDAO;
+import controller.ConsultaDAOFactory;
 import controller.PacienteDAO;
 import controller.SecretariaDAO;
 import java.awt.CardLayout;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -67,12 +69,12 @@ public class telaMedico extends javax.swing.JFrame {
     }
     
     public void preencheTabelaConsulta() throws SQLException{
-        ConsultaDAO cdao = null;
+        ConsultaDAO consultaDAO = ConsultaDAOFactory.getConsultaDAO();
         DefaultTableModel tblCon = (DefaultTableModel) tblCons.getModel();
         
         try {
-            cdao = new ConsultaDAO();
-            for(ConsultaModel c : cdao.listarConsultas()){
+            List<ConsultaModel> consultas = consultaDAO.listarConsultas();
+            for(ConsultaModel c : consultas){
                 Object [] dados = {c.getCod(),c.getMedico(),c.getData(),c.getHora(),c.getPaciente()};
                 tblCon.addRow(dados);
             }
@@ -451,7 +453,7 @@ public class telaMedico extends javax.swing.JFrame {
         DefaultTableModel tblConsultas = (DefaultTableModel) tblCons.getModel();
         ConsultaModel consModel = new ConsultaModel();
         try {
-            ConsultaDAO consDAO = new ConsultaDAO();
+            ConsultaDAO consDAO = ConsultaDAOFactory.getConsultaDAO();
             if(tblCons.getSelectedRow() != -1){
                 consModel.setCod((String) tblCons.getValueAt(tblCons.getSelectedRow(), 0));
                 consDAO.apagarConsulta(consModel);
