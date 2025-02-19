@@ -7,6 +7,7 @@ package view;
 
 import controller.AdministradorDAO;
 import controller.ConsultaDAO;
+import controller.ConsultaDAOFactory;
 import controller.ConvenioDAO;
 import controller.MedicoDAO;
 import controller.PacienteDAO;
@@ -102,12 +103,12 @@ public class telaSecretaria extends javax.swing.JFrame {
     }
     
     public void preencheTabelaConsulta() throws SQLException{
-        ConsultaDAO cdao = null;
+        ConsultaDAO consultaDAO = ConsultaDAOFactory.getConsultaDAO();
         DefaultTableModel tblCon = (DefaultTableModel) tblCons.getModel();
         
         try {
-            cdao = new ConsultaDAO();
-            for(ConsultaModel c : cdao.listarConsultas()){
+            List<ConsultaModel> consultas = consultaDAO.listarConsultas();
+            for(ConsultaModel c : consultas){
                 Object [] dados = {c.getCod(),c.getMedico(),c.getData(),c.getHora(),c.getPaciente()};
                 tblCon.addRow(dados);
             }
@@ -118,12 +119,14 @@ public class telaSecretaria extends javax.swing.JFrame {
     }
     
     public void cadastraConsultaTabela() throws SQLException{
-        ConsultaDAO cdao = null;
+        ConsultaDAO consultaDAO = ConsultaDAOFactory.getConsultaDAO();
         DefaultTableModel tblConsulta = (DefaultTableModel) tblCons.getModel();
+        ((DefaultTableModel) tblCons.getModel()).setRowCount(0);
+
         
         try {
-            cdao = new ConsultaDAO();
-            for(ConsultaModel c : cdao.listarUltimaConsulta()){
+            List<ConsultaModel> consultas = consultaDAO.listarConsultas();
+            for(ConsultaModel c : consultas){
                 Object [] dados = {c.getCod(), c.getMedico(),c.getData(),c.getHora(),c.getPaciente()};
                 tblConsulta.addRow(dados);
             }
@@ -1425,7 +1428,7 @@ public class telaSecretaria extends javax.swing.JFrame {
         consModel.setPaciente(paciente.getText());
         
         try {
-            ConsultaDAO consDAO = new ConsultaDAO();
+            ConsultaDAO consDAO = ConsultaDAOFactory.getConsultaDAO();
             consDAO.cadastrarConsulta(consModel);
             JOptionPane.showMessageDialog(null, "Consulta marcada com sucesso!");
             cadastraConsultaTabela();
@@ -1447,7 +1450,7 @@ public class telaSecretaria extends javax.swing.JFrame {
             consModel.setPaciente(paciente.getText());
             
             try {
-                ConsultaDAO consDAO = new ConsultaDAO();
+                ConsultaDAO consDAO = ConsultaDAOFactory.getConsultaDAO();
                 consDAO.editarConsulta(consModel);
                 JOptionPane.showMessageDialog(null, "Consulta editada com sucesso!");
                 tblConsulta.setValueAt(codCons.getText(), tblCons.getSelectedRow(), 0);
@@ -1472,7 +1475,7 @@ public class telaSecretaria extends javax.swing.JFrame {
             consModel.setCod(codCons.getText());
             
             try {
-                ConsultaDAO consDAO = new ConsultaDAO();
+                ConsultaDAO consDAO = ConsultaDAOFactory.getConsultaDAO();
                 consDAO.apagarConsulta(consModel);
                 JOptionPane.showMessageDialog(null, "Consulta apagada com sucesso!");
                 tblConsulta.removeRow(tblCons.getSelectedRow());
